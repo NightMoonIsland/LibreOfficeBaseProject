@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="Module1" script:language="StarBasic" script:moduleType="normal">REM  *****  BASIC  *****
+
+Sub Main
+
+End Sub
+
+Sub CloseFormB()
+    On Error Resume Next          &apos; 如果已关闭会抛错误，直接跳过
+    ThisDatabaseDocument.FormDocuments.getByName(&quot;开始&quot;).close(True)
+    On Error GoTo 0
+End Sub
+
+Sub CloseFormA()
+    Dim oFormDoc As Object
+    oFormDoc = ThisDatabaseDocument.FormDocuments.getByName(&quot;开始&quot;)
+    If Not oFormDoc.isClosed() Then
+        oFormDoc.close(True)   &apos; True=保存后关闭；False=直接关
+    End If
+End Sub
+
+Sub SwitchToForm2
+    &apos; 获取当前数据库文档
+    Dim oDoc As Object
+    oDoc = ThisDatabaseDocument
+
+    &apos; 获取表单集合
+    Dim oForms As Object
+    oForms = oDoc.FormDocuments
+
+    &apos; 遍历表单集合，找到Form2
+    Dim oForm As Object
+    Dim i As Integer
+    For i = 0 To oForms.Count - 1
+        oForm = oForms(i)
+        If oForm.Name = &quot;任务&quot; Then
+            &apos; 打开Form2
+            oForm.open
+            Exit For
+        End If
+    Next i
+    
+    CloseFormB()
+End Sub
+
+Sub SwitchToForm2AndCloseCurrent
+    &apos; 获取当前数据库文档
+    Dim oDoc As Object
+    oDoc = ThisDatabaseDocument
+
+    &apos; 获取当前表单
+    Dim oCurrentForm As Object
+    oCurrentForm = oDoc.CurrentController.ActiveForm
+
+    &apos; 获取表单集合
+    Dim oForms As Object
+    oForms = oDoc.FormDocuments
+
+    &apos; 遍历表单集合，找到Form2
+    Dim oForm As Object
+    Dim i As Integer
+    For i = 0 To oForms.Count - 1
+        oForm = oForms(i)
+        If oForm.Name = &quot;任务&quot; Then
+            &apos; 打开Form2
+            oForm.open
+            Exit For
+        End If
+    Next i
+
+    &apos; 关闭当前表单
+    oCurrentForm.close(True)
+End Sub
+
+Sub MaximizeFormWindow
+    Dim oDoc
+    oDoc = ThisComponent.CurrentController.Frame.ContainerWindow
+    oDoc.IsMaximized = True
+End Sub
+
+Sub SetFormWindow()
+    Dim oFrame   &apos;当前表单窗口
+    oFrame = ThisComponent.CurrentController.Frame
+    
+    &apos; 参数：X, Y, 宽度, 高度，最后 12 表示“同时改位置和大小”
+    oFrame.ContainerWindow.setPosSize(100, 100, 1200, 700, 12)
+End Sub
+</script:module>
